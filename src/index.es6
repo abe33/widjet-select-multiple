@@ -1,19 +1,17 @@
 import widgets from 'widjet'
 import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
 import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils'
-import {copyOption, optionsOf, selectedOptionsOf} from './utils'
+import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf} from './utils'
 
 widgets.define('select-multiple', (options) => {
   return (select) => {
     const parent = wrapSelect(select)
-    const allOptions = optionsOf(select)
     const selector = document.createElement('select')
     const valuesContainer = document.createElement('div')
 
     valuesContainer.classList.add('values')
 
-    allOptions.map(copyOption).forEach((option) => selector.appendChild(option))
-
+    copyOptions(select, selector)
     updateDivsFromMultiple(valuesContainer, select)
     updateSingleFromMultiple(selector, select)
 
@@ -58,6 +56,12 @@ widgets.define('select-multiple', (options) => {
       multipleOptions.indexOf(option.value) !== -1
         ? option.style.display = 'none'
         : option.removeAttribute('style')
+    })
+
+    eachOptgroup(single, (group) => {
+      asArray(group.children).every(n => n.style.display === 'none')
+        ? group.style.display = 'none'
+        : group.removeAttribute('style')
     })
   }
 
