@@ -1,27 +1,18 @@
 import widgets from 'widjet'
 import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
 import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils'
-import {optionsOf, selectedOptionsOf} from './utils'
+import {copyOption, optionsOf, selectedOptionsOf} from './utils'
 
 widgets.define('select-multiple', (options) => {
   return (select) => {
-    const parent = document.createElement('div')
-    parent.classList.add('select-multiple')
-    select.parentNode.insertBefore(parent, select)
-    parent.appendChild(select)
-
-    const options = asArray(select.querySelectorAll('option'))
+    const parent = wrapSelect(select)
+    const allOptions = optionsOf(select)
     const selector = document.createElement('select')
     const valuesContainer = document.createElement('div')
 
     valuesContainer.classList.add('values')
 
-    options.forEach((option) => {
-      const copy = document.createElement('option')
-      copy.value = option.value
-      copy.textContent = option.textContent
-      selector.appendChild(copy)
-    })
+    allOptions.map(copyOption).forEach((option) => selector.appendChild(option))
 
     updateDivsFromMultiple(valuesContainer, select)
     updateSingleFromMultiple(selector, select)
@@ -48,6 +39,14 @@ widgets.define('select-multiple', (options) => {
     parent.appendChild(valuesContainer)
 
     return subscriptions
+  }
+
+  function wrapSelect (select) {
+    const parent = document.createElement('div')
+    parent.classList.add('select-multiple')
+    select.parentNode.insertBefore(parent, select)
+    parent.appendChild(select)
+    return parent
   }
 
   function updateSingleFromMultiple (single, multiple) {
