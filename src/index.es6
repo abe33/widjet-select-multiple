@@ -4,12 +4,20 @@ import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils'
 import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf} from './utils'
 
 widgets.define('select-multiple', (options) => {
+  const wrapperClass = options.wrapperClass || 'select-multiple'
+  const itemsWrapperClass = options.itemsWrapperClass || 'values'
+  const itemClass = options.itemClass || 'option'
+  const itemLabelClass = options.itemLabelClass || 'label'
+  const itemCloseClass = options.itemCloseClass || 'close'
+  const itemCloseIconClass = options.itemCloseIconClass || 'fa fa-close'
+  const formatValue = options.formatValue || defaultFormatValue
+
   return (select) => {
     const parent = wrapSelect(select)
     const selector = document.createElement('select')
     const valuesContainer = document.createElement('div')
 
-    valuesContainer.classList.add('values')
+    valuesContainer.classList.add(itemsWrapperClass)
 
     copyOptions(select, selector)
     updateDivsFromMultiple(valuesContainer, select)
@@ -26,7 +34,7 @@ widgets.define('select-multiple', (options) => {
       updateSingleFromMultiple(selector, select)
     }))
 
-    subscriptions.add(addDelegatedEventListener(valuesContainer, 'click', '.option .close', (e) => {
+    subscriptions.add(addDelegatedEventListener(valuesContainer, 'click', `.${itemCloseClass}`, (e) => {
       const value = e.target.parentNode.getAttribute('data-value')
 
       select.querySelector(`option[value="${value}"]`).selected = false
@@ -41,7 +49,7 @@ widgets.define('select-multiple', (options) => {
 
   function wrapSelect (select) {
     const parent = document.createElement('div')
-    parent.classList.add('select-multiple')
+    parent.classList.add(wrapperClass)
     select.parentNode.insertBefore(parent, select)
     parent.appendChild(select)
     return parent
@@ -86,16 +94,21 @@ widgets.define('select-multiple', (options) => {
 
     multipleOptions.forEach((option) => {
       if (!container.querySelector(`[data-value="${option.value}"]`)) {
-        container.appendChild(getOptionDiv(option))
+        container.appendChild(formatValue(option))
       }
     })
   }
 
-  function getOptionDiv (option) {
+  function defaultFormatValue (option) {
     const div = document.createElement('div')
-    div.classList.add('option')
+    div.classList.add(itemClass)
     div.setAttribute('data-value', option.value)
-    div.innerHTML = `<span class="option-label">${option.textContent}</span><button class="close"><i class="fa fa-close"></i></button>`
+    div.innerHTML = `
+      <span class="${itemLabelClass}">${option.textContent}</span>
+      <button class="${itemCloseClass}">
+        <i class="${itemCloseIconClass}"></i>
+      </button>
+    `
 
     return div
   }
