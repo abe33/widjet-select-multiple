@@ -12,6 +12,7 @@
     "standard": "standard src/*.es6 test/*.es6",
     "esdoc": "esdoc -c esdoc.json",
     "prepublish": "npm run babel",
+    "start": "widjet-test-server test/**/*.es6"
   },
   "keywords": [
     "widgets",
@@ -40,7 +41,7 @@
     "nyc": "^8.3.0",
     "sinon": "^1.17.4",
     "standard": "^5.4.1",
-    "widjet-test-utils": "^1.0.0",
+    "widjet-test-utils": "^1.7.0",
     "codecov": "^1.0.0"
   },
   "dependencies": {
