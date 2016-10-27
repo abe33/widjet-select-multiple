@@ -17,10 +17,19 @@ import 'widjet-select-multiple'
 widgets('select-multiple', 'select[multiple]', {on: 'load'})
 ```
 
-The `select-multiple` widget operates on `select` inputs with the `multiple` attribute defined. It replaces the traditionnal list UI with a new DOM you can style as you see fit. From a single select element you end up with a div containing the original select, a new select that displays only the values that are not selected yet and another div containing the selected values represented as divs with a close button in them (this is the default value formatting, but it can be change through options).
+The `select-multiple` widget operates on `select` inputs with the `multiple` attribute defined. It replaces the traditionnal list UI with a new DOM you can style as you see fit. From a single select element you end up with a div containing the original select, a new select that displays only the values that are not selected yet and another div containing the selected values represented as divs with a close button in them (this is the default value formatting, but it can be change through options or data attributes).
 
-The basic behaviour is that when an item is selected in the single select, that values is selected in the multiple select, disabled in the single select and displayed in the selected values div using the formatting function.
-When clicking on the close button the inverse process is performed, the option is unselected in the multiple select, enabled in the single select and removed from the selected values div.
+The widget behaviour is:
+
+- When an item is selected in the single select, that value is selected in the multiple select, disabled in the single select and displayed in the selected values div using the formatting function.
+- When clicking on the close button the inverse process is performed, the option is unselected in the multiple select, enabled in the single select and removed from the selected values div.
+
+### Custom Attributes
+
+Name|Type|Description
+---|---|---
+`data-format-value`|`string`|The name of a function defined in the `options` object that will be used as the value formatting function.
+
 
 ### Options
 
