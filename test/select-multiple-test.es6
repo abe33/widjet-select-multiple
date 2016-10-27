@@ -3,6 +3,7 @@ import jsdom from 'mocha-jsdom'
 import widgets from 'widjet'
 import {getNode} from 'widjet-utils'
 import {click} from 'widjet-test-utils/events'
+import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
 
 import '../src/index'
 import {selectedOptionsOf, isNode} from '../src/utils'
@@ -14,15 +15,15 @@ describe('select-multiple', () => {
 
   describe('without options', () => {
     beforeEach(() => {
-      document.body.innerHTML = `
+      setPageContent(`
         <select multiple>
           <option value='foo'>Foo</option>
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `
+      `)
 
-      select = document.querySelector('select')
+      select = getTestRoot().querySelector('select')
 
       widgets('select-multiple', 'select[multiple]', {on: 'init'})
 
@@ -90,7 +91,7 @@ describe('select-multiple', () => {
 
     describe('when the select has option groups', () => {
       beforeEach(() => {
-        document.body.innerHTML = `
+        setPageContent(`
           <select multiple>
             <optgroup label='first'>
               <option value='foo'>Foo</option>
@@ -101,9 +102,9 @@ describe('select-multiple', () => {
               <option value='baz' selected>Baz</option>
             </optgroup>
           </select>
-        `
+        `)
 
-        select = document.querySelector('select')
+        select = getTestRoot().querySelector('select')
 
         widgets('select-multiple', 'select[multiple]', {on: 'init'})
 
@@ -129,15 +130,15 @@ describe('select-multiple', () => {
 
   describe('with custom classes in options', () => {
     beforeEach(() => {
-      document.body.innerHTML = `
+      setPageContent(`
         <select multiple>
           <option value='foo'>Foo</option>
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `
+      `)
 
-      select = document.querySelector('select')
+      select = getTestRoot().querySelector('select')
 
       widgets('select-multiple', 'select[multiple]', {
         on: 'init',
@@ -165,15 +166,15 @@ describe('select-multiple', () => {
 
   describe('with a custom value builder', () => {
     beforeEach(() => {
-      document.body.innerHTML = `
+      setPageContent(`
         <select multiple>
           <option value='foo'>Foo</option>
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `
+      `)
 
-      select = document.querySelector('select')
+      select = getTestRoot().querySelector('select')
 
       widgets('select-multiple', 'select[multiple]', {
         on: 'init',
