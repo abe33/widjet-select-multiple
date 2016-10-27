@@ -188,5 +188,31 @@ describe('select-multiple', () => {
     it('calls the function to creates the values', () => {
       expect(values.querySelectorAll('.foo')).to.have.length(2)
     })
+
+    describe('on the select itself', () => {
+      beforeEach(() => {
+        setPageContent(`
+          <select multiple data-format-value='someFormatter'>
+            <option value='foo'>Foo</option>
+            <option value='bar' selected>Bar</option>
+            <option value='baz' selected>Baz</option>
+          </select>
+        `)
+
+        select = getTestRoot().querySelector('select')
+
+        widgets('select-multiple', 'select[multiple]', {
+          on: 'init',
+          someFormatter: () => getNode('<div class="foo">foo</div>')
+        })
+
+        wrapper = select.parentNode
+        values = wrapper.querySelector('.values')
+      })
+
+      it('calls the function to creates the values', () => {
+        expect(values.querySelectorAll('.foo')).to.have.length(2)
+      })
+    })
   })
 })
