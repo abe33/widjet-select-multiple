@@ -1,6 +1,6 @@
 {
   "name": "widjet-select-multiple",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A widget to make multiple select more user friendly",
   "main": "lib/index.js",
   "jsnext:main": "src/index.es6",
