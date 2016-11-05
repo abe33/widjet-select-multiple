@@ -107,7 +107,7 @@ widgets.define('select-multiple', (options) => {
     div.setAttribute('data-value', option.value)
     div.innerHTML = `
       <span class="${itemLabelClass}">${option.textContent}</span>
-      <button type="button" class="${itemCloseClass}">
+      <button type="button" class="${itemCloseClass}" tabindex="-1">
         <i class="${itemCloseIconClass}"></i>
       </button>
     `
