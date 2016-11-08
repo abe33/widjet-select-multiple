@@ -1,6 +1,6 @@
 {
   "name": "widjet-select-multiple",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "A widget to make multiple select more user friendly",
   "main": "lib/index.js",
   "jsnext:main": "src/index.es6",
@@ -11,7 +11,8 @@
     "babel": "babel src --out-dir lib",
     "standard": "standard src/*.es6 test/*.es6",
     "esdoc": "esdoc -c esdoc.json",
-    "install": "npm run babel"
+    "prepublish": "npm run babel",
+    "start": "widjet-test-server test/**/*.es6"
   },
   "keywords": [
     "widgets",
@@ -30,7 +31,7 @@
   "author": "Cédric Néhémie <cedric.nehemie@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^4.1.6",
+    "babel-eslint": "^7.0.0",
     "babel-plugin-istanbul": "^2.0.1",
     "babel-register": "^6.14.0",
     "codecov": "^1.0.0",
@@ -41,7 +42,7 @@
     "nyc": "^8.3.0",
     "sinon": "^1.17.4",
     "standard": "^5.4.1",
-    "widjet-test-utils": "^1.0.0"
+    "widjet-test-utils": "^1.7.0"
   },
   "dependencies": {
     "babel-cli": "^6.3.17",

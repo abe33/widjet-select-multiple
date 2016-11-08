@@ -10,17 +10,19 @@ widgets.define('select-multiple', (options) => {
   const itemLabelClass = options.itemLabelClass || 'label'
   const itemCloseClass = options.itemCloseClass || 'close'
   const itemCloseIconClass = options.itemCloseIconClass || 'fa fa-close'
-  const formatValue = options.formatValue || defaultFormatValue
 
   return (select) => {
     const parent = wrapSelect(select)
     const selector = document.createElement('select')
     const valuesContainer = document.createElement('div')
+    const formatValue = options[select.getAttribute('data-format-value')] ||
+                        options.formatValue ||
+                        defaultFormatValue
 
     valuesContainer.classList.add(itemsWrapperClass)
 
     copyOptions(select, selector)
-    updateDivsFromMultiple(valuesContainer, select)
+    updateDivsFromMultiple(valuesContainer, select, formatValue)
     updateSingleFromMultiple(selector, select)
 
     const subscriptions = new CompositeDisposable()
@@ -30,7 +32,7 @@ widgets.define('select-multiple', (options) => {
     }))
 
     subscriptions.add(new DisposableEvent(select, 'change', (e) => {
-      updateDivsFromMultiple(valuesContainer, select)
+      updateDivsFromMultiple(valuesContainer, select, formatValue)
       updateSingleFromMultiple(selector, select)
     }))
 
@@ -82,7 +84,7 @@ widgets.define('select-multiple', (options) => {
     widgets.dispatch(multiple, 'change')
   }
 
-  function updateDivsFromMultiple (container, multiple) {
+  function updateDivsFromMultiple (container, multiple, formatValue) {
     const multipleOptions = selectedOptionsOf(multiple)
     const multipleOptionsValues = multipleOptions.map(option => option.value)
 
@@ -105,7 +107,7 @@ widgets.define('select-multiple', (options) => {
     div.setAttribute('data-value', option.value)
     div.innerHTML = `
       <span class="${itemLabelClass}">${option.textContent}</span>
-      <button class="${itemCloseClass}">
+      <button type="button" class="${itemCloseClass}" tabindex="-1">
         <i class="${itemCloseIconClass}"></i>
       </button>
     `
