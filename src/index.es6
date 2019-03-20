@@ -21,6 +21,8 @@ widgets.define('select-multiple', (options) => {
 
     valuesContainer.classList.add(itemsWrapperClass)
 
+    selector.innerHTML = '<option style="display: none;"></option>'
+
     copyOptions(select, selector)
     updateDivsFromMultiple(valuesContainer, select, formatValue)
     updateSingleFromMultiple(selector, select)
@@ -63,7 +65,7 @@ widgets.define('select-multiple', (options) => {
 
     singleOptions.forEach((option) => {
       option.selected = false
-      multipleOptions.indexOf(option.value) !== -1
+      !option.value || multipleOptions.indexOf(option.value) !== -1
         ? option.style.display = 'none'
         : option.removeAttribute('style')
     })

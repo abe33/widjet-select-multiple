@@ -45,7 +45,12 @@ describe('select-multiple', () => {
     it('creates a single select with only the remaining selectable value displayed', () => {
       expect(singleSelect).not.to.be(null)
       expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1)
-      expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2)
+      expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3)
+    })
+
+    it('creates an empty selected option in the single select', () => {
+      expect(singleSelect).not.to.be(null)
+      expect(singleSelect.querySelectorAll('option:selected')).to.have.length(1)
     })
 
     describe('clicking on an item close button', () => {
@@ -61,7 +66,7 @@ describe('select-multiple', () => {
 
       it('updates the visible options in the single select', () => {
         expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(2)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(1)
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2)
       })
 
       it('updates the selected options in the origin multiple select', () => {
@@ -71,7 +76,7 @@ describe('select-multiple', () => {
 
     describe('selecting a value in the single select', () => {
       beforeEach(() => {
-        singleSelect.querySelector('option').selected = true
+        singleSelect.querySelector('option[value]').selected = true
         widgets.dispatch(singleSelect, 'change')
       })
 
@@ -85,7 +90,7 @@ describe('select-multiple', () => {
 
       it('hides the selected option in the single select', () => {
         expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(0)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3)
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(4)
       })
     })
 
@@ -119,7 +124,7 @@ describe('select-multiple', () => {
         expect(singleSelect.querySelector('optgroup[label="second"]').children).to.have.length(2)
 
         expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2)
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3)
       })
 
       it('hides option groups with all their options hidden', () => {
