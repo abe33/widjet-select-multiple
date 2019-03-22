@@ -1,17 +1,17 @@
-import expect from 'expect.js'
-import jsdom from 'mocha-jsdom'
-import widgets from 'widjet'
-import {getNode} from 'widjet-utils'
-import {click} from 'widjet-test-utils/events'
-import {setPageContent, getTestRoot} from 'widjet-test-utils/dom'
+import expect from 'expect.js';
+import jsdom from 'mocha-jsdom';
+import widgets from 'widjet';
+import {getNode} from 'widjet-utils';
+import {click} from 'widjet-test-utils/events';
+import {setPageContent, getTestRoot} from 'widjet-test-utils/dom';
 
-import '../src/index'
-import {selectedOptionsOf, isNode} from '../src/utils'
+import '../src/index';
+import {selectedOptionsOf, isNode} from '../src/utils';
 
 describe('select-multiple', () => {
-  jsdom()
+  jsdom({url: 'http://localhost'});
 
-  let select, wrapper, singleSelect, values
+  let select, wrapper, singleSelect, values;
 
   describe('without options', () => {
     beforeEach(() => {
@@ -21,78 +21,78 @@ describe('select-multiple', () => {
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `)
+      `);
 
-      select = getTestRoot().querySelector('select')
+      select = getTestRoot().querySelector('select');
 
-      widgets('select-multiple', 'select[multiple]', {on: 'init'})
+      widgets('select-multiple', 'select[multiple]', {on: 'init'});
 
-      wrapper = select.parentNode
-      singleSelect = wrapper.querySelector('select:not([multiple])')
-      values = wrapper.querySelector('.values')
-    })
+      wrapper = select.parentNode;
+      singleSelect = wrapper.querySelector('select:not([multiple])');
+      values = wrapper.querySelector('.values');
+    });
 
     it('wraps the select into a .select-multiple div', () => {
-      expect(isNode('div', wrapper)).to.be.ok()
-      expect(wrapper.classList.contains('select-multiple')).to.be.ok()
-    })
+      expect(isNode('div', wrapper)).to.be.ok();
+      expect(wrapper.classList.contains('select-multiple')).to.be.ok();
+    });
 
     it('creates a div to display selected values', () => {
-      expect(values).not.to.be(null)
-      expect(values.children).to.have.length(2)
-    })
+      expect(values).not.to.be(null);
+      expect(values.children).to.have.length(2);
+    });
 
     it('creates a single select with only the remaining selectable value displayed', () => {
-      expect(singleSelect).not.to.be(null)
-      expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1)
-      expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3)
-    })
+      expect(singleSelect).not.to.be(null);
+      expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+      expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+    });
 
     it('creates an empty selected option in the single select', () => {
-      expect(singleSelect).not.to.be(null)
-      expect(singleSelect.querySelectorAll('option:selected')).to.have.length(1)
-    })
+      expect(singleSelect).not.to.be(null);
+      expect(singleSelect.querySelectorAll('option:not([value])')).to.have.length(1);
+    });
 
     describe('clicking on an item close button', () => {
       beforeEach(() => {
-        const button = wrapper.querySelector('.values .close')
+        const button = wrapper.querySelector('.values .close');
 
-        click(button)
-      })
+        click(button);
+      });
 
       it('removes the corresponding value from the values div', () => {
-        expect(values.children).to.have.length(1)
-      })
+        expect(values.children).to.have.length(1);
+      });
 
       it('updates the visible options in the single select', () => {
-        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(2)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2)
-      })
+        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(2);
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2);
+      });
 
       it('updates the selected options in the origin multiple select', () => {
-        expect(selectedOptionsOf(select)).to.have.length(1)
-      })
-    })
+        expect(selectedOptionsOf(select)).to.have.length(1);
+      });
+    });
 
     describe('selecting a value in the single select', () => {
       beforeEach(() => {
-        singleSelect.querySelector('option[value]').selected = true
-        widgets.dispatch(singleSelect, 'change')
-      })
+        singleSelect.querySelector('option[value]').selected = true;
+        widgets.dispatch(singleSelect, 'change');
+      });
 
       it('updates the displayed values', () => {
-        expect(values.children).to.have.length(3)
-      })
+        expect(values.children).to.have.length(3);
+      });
 
       it('updates the multiple select values', () => {
-        expect(selectedOptionsOf(select)).to.have.length(3)
-      })
+        expect(selectedOptionsOf(select)).to.have.length(3);
+      });
 
       it('hides the selected option in the single select', () => {
-        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(0)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(4)
-      })
-    })
+        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(0);
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(4);
+      });
+    });
 
     describe('when the select has option groups', () => {
       beforeEach(() => {
@@ -107,31 +107,31 @@ describe('select-multiple', () => {
               <option value='baz' selected>Baz</option>
             </optgroup>
           </select>
-        `)
+        `);
 
-        select = getTestRoot().querySelector('select')
+        select = getTestRoot().querySelector('select');
 
-        widgets('select-multiple', 'select[multiple]', {on: 'init'})
+        widgets('select-multiple', 'select[multiple]', {on: 'init'});
 
-        wrapper = select.parentNode
-        singleSelect = wrapper.querySelector('select:not([multiple])')
-        values = wrapper.querySelector('.values')
-      })
+        wrapper = select.parentNode;
+        singleSelect = wrapper.querySelector('select:not([multiple])');
+        values = wrapper.querySelector('.values');
+      });
 
       it('replicates the option groups in the single select', () => {
-        expect(singleSelect.querySelectorAll('optgroup')).to.have.length(2)
-        expect(singleSelect.querySelector('optgroup[label="first"]').children).to.have.length(1)
-        expect(singleSelect.querySelector('optgroup[label="second"]').children).to.have.length(2)
+        expect(singleSelect.querySelectorAll('optgroup')).to.have.length(2);
+        expect(singleSelect.querySelector('optgroup[label="first"]').children).to.have.length(1);
+        expect(singleSelect.querySelector('optgroup[label="second"]').children).to.have.length(2);
 
-        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1)
-        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3)
-      })
+        expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+        expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+      });
 
       it('hides option groups with all their options hidden', () => {
-        expect(singleSelect.querySelectorAll('optgroup[style]')).to.have.length(1)
-      })
-    })
-  })
+        expect(singleSelect.querySelectorAll('optgroup[style]')).to.have.length(1);
+      });
+    });
+  });
 
   describe('with custom classes in options', () => {
     beforeEach(() => {
@@ -141,9 +141,9 @@ describe('select-multiple', () => {
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `)
+      `);
 
-      select = getTestRoot().querySelector('select')
+      select = getTestRoot().querySelector('select');
 
       widgets('select-multiple', 'select[multiple]', {
         on: 'init',
@@ -152,22 +152,22 @@ describe('select-multiple', () => {
         itemClass: 'option-value',
         itemLabelClass: 'option-label',
         itemCloseClass: 'option-close',
-        itemCloseIconClass: 'option-icon'
-      })
+        itemCloseIconClass: 'option-icon',
+      });
 
-      wrapper = select.parentNode
-      values = wrapper.querySelector('.option-values')
-    })
+      wrapper = select.parentNode;
+      values = wrapper.querySelector('.option-values');
+    });
 
     it('uses the passed-in classes', () => {
-      expect(wrapper.classList.contains('multiple-select')).to.be.ok()
-      expect(values).not.to.be(null)
-      expect(values.querySelectorAll('.option-value')).to.have.length(2)
-      expect(values.querySelectorAll('.option-label')).to.have.length(2)
-      expect(values.querySelectorAll('.option-close')).to.have.length(2)
-      expect(values.querySelectorAll('.option-icon')).to.have.length(2)
-    })
-  })
+      expect(wrapper.classList.contains('multiple-select')).to.be.ok();
+      expect(values).not.to.be(null);
+      expect(values.querySelectorAll('.option-value')).to.have.length(2);
+      expect(values.querySelectorAll('.option-label')).to.have.length(2);
+      expect(values.querySelectorAll('.option-close')).to.have.length(2);
+      expect(values.querySelectorAll('.option-icon')).to.have.length(2);
+    });
+  });
 
   describe('with a custom value builder', () => {
     beforeEach(() => {
@@ -177,22 +177,22 @@ describe('select-multiple', () => {
           <option value='bar' selected>Bar</option>
           <option value='baz' selected>Baz</option>
         </select>
-      `)
+      `);
 
-      select = getTestRoot().querySelector('select')
+      select = getTestRoot().querySelector('select');
 
       widgets('select-multiple', 'select[multiple]', {
         on: 'init',
-        formatValue: () => getNode('<div class="foo">foo</div>')
-      })
+        formatValue: () => getNode('<div class="foo">foo</div>'),
+      });
 
-      wrapper = select.parentNode
-      values = wrapper.querySelector('.values')
-    })
+      wrapper = select.parentNode;
+      values = wrapper.querySelector('.values');
+    });
 
     it('calls the function to creates the values', () => {
-      expect(values.querySelectorAll('.foo')).to.have.length(2)
-    })
+      expect(values.querySelectorAll('.foo')).to.have.length(2);
+    });
 
     describe('on the select itself', () => {
       beforeEach(() => {
@@ -202,22 +202,22 @@ describe('select-multiple', () => {
             <option value='bar' selected>Bar</option>
             <option value='baz' selected>Baz</option>
           </select>
-        `)
+        `);
 
-        select = getTestRoot().querySelector('select')
+        select = getTestRoot().querySelector('select');
 
         widgets('select-multiple', 'select[multiple]', {
           on: 'init',
-          someFormatter: () => getNode('<div class="foo">foo</div>')
-        })
+          someFormatter: () => getNode('<div class="foo">foo</div>'),
+        });
 
-        wrapper = select.parentNode
-        values = wrapper.querySelector('.values')
-      })
+        wrapper = select.parentNode;
+        values = wrapper.querySelector('.values');
+      });
 
       it('calls the function to creates the values', () => {
-        expect(values.querySelectorAll('.foo')).to.have.length(2)
-      })
-    })
-  })
-})
+        expect(values.querySelectorAll('.foo')).to.have.length(2);
+      });
+    });
+  });
+});

@@ -1,119 +1,119 @@
-import widgets from 'widjet'
-import {CompositeDisposable, DisposableEvent} from 'widjet-disposables'
-import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils'
-import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf} from './utils'
+import widgets from 'widjet';
+import {CompositeDisposable, DisposableEvent} from 'widjet-disposables';
+import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils';
+import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf} from './utils';
 
 widgets.define('select-multiple', (options) => {
-  const wrapperClass = options.wrapperClass || 'select-multiple'
-  const itemsWrapperClass = options.itemsWrapperClass || 'values'
-  const itemClass = options.itemClass || 'option'
-  const itemLabelClass = options.itemLabelClass || 'label'
-  const itemCloseClass = options.itemCloseClass || 'close'
-  const itemCloseIconClass = options.itemCloseIconClass || 'fa fa-close'
+  const wrapperClass = options.wrapperClass || 'select-multiple';
+  const itemsWrapperClass = options.itemsWrapperClass || 'values';
+  const itemClass = options.itemClass || 'option';
+  const itemLabelClass = options.itemLabelClass || 'label';
+  const itemCloseClass = options.itemCloseClass || 'close';
+  const itemCloseIconClass = options.itemCloseIconClass || 'fa fa-close';
 
   return (select) => {
-    const parent = wrapSelect(select)
-    const selector = document.createElement('select')
-    const valuesContainer = document.createElement('div')
+    const parent = wrapSelect(select);
+    const selector = document.createElement('select');
+    const valuesContainer = document.createElement('div');
     const formatValue = options[select.getAttribute('data-format-value')] ||
                         options.formatValue ||
-                        defaultFormatValue
+                        defaultFormatValue;
 
-    valuesContainer.classList.add(itemsWrapperClass)
+    valuesContainer.classList.add(itemsWrapperClass);
 
-    selector.innerHTML = '<option style="display: none;"></option>'
+    selector.innerHTML = '<option style="display: none;"></option>';
 
-    copyOptions(select, selector)
-    updateDivsFromMultiple(valuesContainer, select, formatValue)
-    updateSingleFromMultiple(selector, select)
+    copyOptions(select, selector);
+    updateDivsFromMultiple(valuesContainer, select, formatValue);
+    updateSingleFromMultiple(selector, select);
 
-    const subscriptions = new CompositeDisposable()
+    const subscriptions = new CompositeDisposable();
 
     subscriptions.add(new DisposableEvent(selector, 'change', (e) => {
-      updateMultipleFromSingleChanges(selector, select)
-    }))
+      updateMultipleFromSingleChanges(selector, select);
+    }));
 
     subscriptions.add(new DisposableEvent(select, 'change', (e) => {
-      updateDivsFromMultiple(valuesContainer, select, formatValue)
-      updateSingleFromMultiple(selector, select)
-    }))
+      updateDivsFromMultiple(valuesContainer, select, formatValue);
+      updateSingleFromMultiple(selector, select);
+    }));
 
     subscriptions.add(addDelegatedEventListener(valuesContainer, 'click', `.${itemCloseClass}`, (e) => {
-      const value = e.target.parentNode.getAttribute('data-value')
+      const value = e.target.parentNode.getAttribute('data-value');
 
-      select.querySelector(`option[value="${value}"]`).selected = false
-      widgets.dispatch(select, 'change')
-    }))
+      select.querySelector(`option[value="${value}"]`).selected = false;
+      widgets.dispatch(select, 'change');
+    }));
 
-    parent.appendChild(selector)
-    parent.appendChild(valuesContainer)
+    parent.appendChild(selector);
+    parent.appendChild(valuesContainer);
 
-    return subscriptions
+    return subscriptions;
+  };
+
+  function wrapSelect(select) {
+    const parent = document.createElement('div');
+    parent.classList.add(wrapperClass);
+    select.parentNode.insertBefore(parent, select);
+    parent.appendChild(select);
+    return parent;
   }
 
-  function wrapSelect (select) {
-    const parent = document.createElement('div')
-    parent.classList.add(wrapperClass)
-    select.parentNode.insertBefore(parent, select)
-    parent.appendChild(select)
-    return parent
-  }
-
-  function updateSingleFromMultiple (single, multiple) {
-    const singleOptions = optionsOf(single)
-    const multipleOptions = selectedOptionsOf(multiple).map(option => option.value)
+  function updateSingleFromMultiple(single, multiple) {
+    const singleOptions = optionsOf(single);
+    const multipleOptions = selectedOptionsOf(multiple).map(option => option.value);
 
     singleOptions.forEach((option) => {
-      option.selected = false
+      option.selected = false;
       !option.value || multipleOptions.indexOf(option.value) !== -1
         ? option.style.display = 'none'
-        : option.removeAttribute('style')
-    })
+        : option.removeAttribute('style');
+    });
 
     eachOptgroup(single, (group) => {
       asArray(group.children).every(n => n.style.display === 'none')
         ? group.style.display = 'none'
-        : group.removeAttribute('style')
-    })
+        : group.removeAttribute('style');
+    });
   }
 
-  function updateMultipleFromSingleChanges (single, multiple) {
-    const multipleOptions = selectedOptionsOf(multiple)
-    const singleOptions = selectedOptionsOf(single)
-    const added = singleOptions.filter(option => multipleOptions.indexOf(option.value) === -1)[0]
+  function updateMultipleFromSingleChanges(single, multiple) {
+    const multipleOptions = selectedOptionsOf(multiple);
+    const singleOptions = selectedOptionsOf(single);
+    const added = singleOptions.filter(option => multipleOptions.indexOf(option.value) === -1)[0];
 
-    multiple.querySelector(`option[value="${added.value}"]`).selected = true
-    widgets.dispatch(multiple, 'change')
+    multiple.querySelector(`option[value="${added.value}"]`).selected = true;
+    widgets.dispatch(multiple, 'change');
   }
 
-  function updateDivsFromMultiple (container, multiple, formatValue) {
-    const multipleOptions = selectedOptionsOf(multiple)
-    const multipleOptionsValues = multipleOptions.map(option => option.value)
+  function updateDivsFromMultiple(container, multiple, formatValue) {
+    const multipleOptions = selectedOptionsOf(multiple);
+    const multipleOptionsValues = multipleOptions.map(option => option.value);
 
     asArray(container.children).forEach((div) => {
       if (multipleOptionsValues.indexOf(div.getAttribute('data-value')) === -1) {
-        detachNode(div)
+        detachNode(div);
       }
-    })
+    });
 
     multipleOptions.forEach((option) => {
       if (!container.querySelector(`[data-value="${option.value}"]`)) {
-        container.appendChild(formatValue(option))
+        container.appendChild(formatValue(option));
       }
-    })
+    });
   }
 
-  function defaultFormatValue (option) {
-    const div = document.createElement('div')
-    div.classList.add(itemClass)
-    div.setAttribute('data-value', option.value)
+  function defaultFormatValue(option) {
+    const div = document.createElement('div');
+    div.classList.add(itemClass);
+    div.setAttribute('data-value', option.value);
     div.innerHTML = `
       <span class="${itemLabelClass}">${option.textContent}</span>
       <button type="button" class="${itemCloseClass}" tabindex="-1">
         <i class="${itemCloseIconClass}"></i>
       </button>
-    `
+    `;
 
-    return div
+    return div;
   }
-})
+});
