@@ -30,7 +30,26 @@ widgets.define('select-multiple', (options) => {
     const subscriptions = new CompositeDisposable();
 
     subscriptions.add(new DisposableEvent(selector, 'change', (e) => {
-      updateMultipleFromSingleChanges(selector, select);
+      if (options.onSelect) {
+        const res = options.onSelect(selector.value, select);
+        if (typeof res.then == 'function') {
+          res.then(confirm => {
+            if (confirm) {
+              updateMultipleFromSingleChanges(selector, select);
+            } else {
+              selector.selectedIndex = 0;
+            }
+          });
+        } else {
+          if (res) {
+            updateMultipleFromSingleChanges(selector, select);
+          } else {
+            selector.selectedIndex = 0;
+          }
+        }
+      } else {
+        updateMultipleFromSingleChanges(selector, select);
+      }
     }));
 
     subscriptions.add(new DisposableEvent(select, 'change', (e) => {
@@ -41,8 +60,24 @@ widgets.define('select-multiple', (options) => {
     subscriptions.add(addDelegatedEventListener(valuesContainer, 'click', `.${itemCloseClass}`, (e) => {
       const value = e.target.parentNode.getAttribute('data-value');
 
-      select.querySelector(`option[value="${value}"]`).selected = false;
-      widgets.dispatch(select, 'change');
+      if (options.onUnselect) {
+        const res = options.onUnselect(value, select);
+
+        if (typeof res.then == 'function') {
+          res.then(confirm => {
+            if (confirm) {
+              select.querySelector(`option[value="${value}"]`).selected = false;
+              widgets.dispatch(select, 'change');
+            }
+          });
+        } else if (res) {
+          select.querySelector(`option[value="${value}"]`).selected = false;
+          widgets.dispatch(select, 'change');
+        }
+      } else {
+        select.querySelector(`option[value="${value}"]`).selected = false;
+        widgets.dispatch(select, 'change');
+      }
     }));
 
     parent.appendChild(selector);

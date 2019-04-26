@@ -4,6 +4,7 @@ import widgets from 'widjet';
 import {getNode} from 'widjet-utils';
 import {click} from 'widjet-test-utils/events';
 import {setPageContent, getTestRoot} from 'widjet-test-utils/dom';
+import {waitsFor} from 'widjet-test-utils/async';
 
 import '../src/index';
 import {selectedOptionsOf, isNode} from '../src/utils';
@@ -129,6 +130,294 @@ describe('select-multiple', () => {
 
       it('hides option groups with all their options hidden', () => {
         expect(singleSelect.querySelectorAll('optgroup[style]')).to.have.length(1);
+      });
+    });
+  });
+
+  describe('with custom async actions validator', () => {
+    beforeEach(() => {
+      setPageContent(`
+        <select multiple>
+          <option value='foo'>Foo</option>
+          <option value='bar' selected>Bar</option>
+          <option value='baz' selected>Baz</option>
+        </select>
+      `);
+
+      select = getTestRoot().querySelector('select');
+    });
+
+    describe('that returns a truthy value', () => {
+      let resolved;
+
+      beforeEach(() => {
+        widgets('select-multiple', 'select[multiple]', {
+          on: 'init',
+          onSelect() {
+            resolved = true;
+            return Promise.resolve(true);
+          },
+          onUnselect() {
+            resolved = true;
+            return Promise.resolve(true);
+          },
+        });
+
+        wrapper = select.parentNode;
+        singleSelect = wrapper.querySelector('select:not([multiple])');
+        values = wrapper.querySelector('.values');
+      });
+
+      describe('clicking on an item close button', () => {
+        beforeEach(() => {
+          const button = wrapper.querySelector('.values .close');
+
+          click(button);
+
+          return waitsFor('promise to resolve', () => resolved);
+        });
+
+        it('removes the corresponding value from the values div', () => {
+          expect(values.children).to.have.length(1);
+        });
+
+        it('updates the visible options in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(2);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2);
+        });
+
+        it('updates the selected options in the origin multiple select', () => {
+          expect(selectedOptionsOf(select)).to.have.length(1);
+        });
+      });
+
+      describe('selecting a value in the single select', () => {
+        beforeEach(() => {
+          singleSelect.querySelector('option[value]').selected = true;
+          widgets.dispatch(singleSelect, 'change');
+
+          return waitsFor('promise to resolve', () => resolved);
+        });
+
+        it('updates the displayed values', () => {
+          expect(values.children).to.have.length(3);
+        });
+
+        it('updates the multiple select values', () => {
+          expect(selectedOptionsOf(select)).to.have.length(3);
+        });
+
+        it('hides the selected option in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(0);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(4);
+        });
+      });
+    });
+
+    describe('that returns a falsy value', () => {
+      let resolved;
+
+      beforeEach(() => {
+        widgets('select-multiple', 'select[multiple]', {
+          on: 'init',
+          onSelect() {
+            resolved = true;
+            return Promise.resolve(false);
+          },
+          onUnselect() {
+            resolved = true;
+            return Promise.resolve(false);
+          },
+        });
+
+        wrapper = select.parentNode;
+        singleSelect = wrapper.querySelector('select:not([multiple])');
+        values = wrapper.querySelector('.values');
+      });
+
+      describe('clicking on an item close button', () => {
+        beforeEach(() => {
+          const button = wrapper.querySelector('.values .close');
+
+          click(button);
+
+          return waitsFor('promise to resolve', () => resolved);
+        });
+
+        it('does not remove the corresponding value from the values div', () => {
+          expect(values.children).to.have.length(2);
+        });
+
+        it('does not update the visible options in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+        });
+
+        it('does not update the selected options in the origin multiple select', () => {
+          expect(selectedOptionsOf(select)).to.have.length(2);
+        });
+      });
+
+      describe('selecting a value in the single select', () => {
+        beforeEach(() => {
+          singleSelect.querySelector('option[value]').selected = true;
+          widgets.dispatch(singleSelect, 'change');
+
+          return waitsFor('promise to resolve', () => resolved);
+        });
+
+        it('does not update the displayed values', () => {
+          expect(values.children).to.have.length(2);
+        });
+
+        it('does not update the multiple select values', () => {
+          expect(selectedOptionsOf(select)).to.have.length(2);
+        });
+
+        it('does not hide the selected option in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+        });
+
+        it('resets the single select selected value', () => {
+          expect(singleSelect.value).to.eql('');
+        });
+      });
+    });
+  });
+
+  describe('with custom sync actions validator', () => {
+    beforeEach(() => {
+      setPageContent(`
+        <select multiple>
+          <option value='foo'>Foo</option>
+          <option value='bar' selected>Bar</option>
+          <option value='baz' selected>Baz</option>
+        </select>
+      `);
+
+      select = getTestRoot().querySelector('select');
+    });
+
+    describe('that returns a truthy value', () => {
+      beforeEach(() => {
+        widgets('select-multiple', 'select[multiple]', {
+          on: 'init',
+          onSelect() {
+            return true;
+          },
+          onUnselect() {
+            return true;
+          },
+        });
+
+        wrapper = select.parentNode;
+        singleSelect = wrapper.querySelector('select:not([multiple])');
+        values = wrapper.querySelector('.values');
+      });
+
+      describe('clicking on an item close button', () => {
+        beforeEach(() => {
+          const button = wrapper.querySelector('.values .close');
+
+          click(button);
+        });
+
+        it('removes the corresponding value from the values div', () => {
+          expect(values.children).to.have.length(1);
+        });
+
+        it('updates the visible options in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(2);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(2);
+        });
+
+        it('updates the selected options in the origin multiple select', () => {
+          expect(selectedOptionsOf(select)).to.have.length(1);
+        });
+      });
+
+      describe('selecting a value in the single select', () => {
+        beforeEach(() => {
+          singleSelect.querySelector('option[value]').selected = true;
+          widgets.dispatch(singleSelect, 'change');
+        });
+
+        it('updates the displayed values', () => {
+          expect(values.children).to.have.length(3);
+        });
+
+        it('updates the multiple select values', () => {
+          expect(selectedOptionsOf(select)).to.have.length(3);
+        });
+
+        it('hides the selected option in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(0);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(4);
+        });
+      });
+    });
+
+    describe('that returns a falsy value', () => {
+      beforeEach(() => {
+        widgets('select-multiple', 'select[multiple]', {
+          on: 'init',
+          onSelect() {
+            return false;
+          },
+          onUnselect() {
+            return false;
+          },
+        });
+
+        wrapper = select.parentNode;
+        singleSelect = wrapper.querySelector('select:not([multiple])');
+        values = wrapper.querySelector('.values');
+      });
+
+      describe('clicking on an item close button', () => {
+        beforeEach(() => {
+          const button = wrapper.querySelector('.values .close');
+
+          click(button);
+        });
+
+        it('does not remove the corresponding value from the values div', () => {
+          expect(values.children).to.have.length(2);
+        });
+
+        it('does not update the visible options in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+        });
+
+        it('does not update the selected options in the origin multiple select', () => {
+          expect(selectedOptionsOf(select)).to.have.length(2);
+        });
+      });
+
+      describe('selecting a value in the single select', () => {
+        beforeEach(() => {
+          singleSelect.querySelector('option[value]').selected = true;
+          widgets.dispatch(singleSelect, 'change');
+        });
+
+        it('does not update the displayed values', () => {
+          expect(values.children).to.have.length(2);
+        });
+
+        it('does not update the multiple select values', () => {
+          expect(selectedOptionsOf(select)).to.have.length(2);
+        });
+
+        it('does not hide the selected option in the single select', () => {
+          expect(singleSelect.querySelectorAll('option:not([style])')).to.have.length(1);
+          expect(singleSelect.querySelectorAll('option[style]')).to.have.length(3);
+        });
+
+        it('resets the single select selected value', () => {
+          expect(singleSelect.value).to.eql('');
+        });
       });
     });
   });
