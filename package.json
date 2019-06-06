@@ -1,6 +1,6 @@
 {
   "name": "widjet-select-multiple",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A widget to make multiple select more user friendly",
   "main": "lib/index.js",
   "jsnext:main": "src/index.es6",
@@ -54,9 +54,12 @@
     "nyc": "^13.3.0",
     "sinon": "^1.17.4",
     "jsdom": "^9.8.3",
+    "widjet": "^1.1.0",
+    "widjet-disposables": "^1.0.0",
+    "widjet-utils": "^1.1.0",
     "widjet-test-utils": "^1.9.1"
   },
-  "dependencies": {
+  "peerDependencies": {
     "widjet": "^1.1.0",
     "widjet-disposables": "^1.0.0",
     "widjet-utils": "^1.1.0"
