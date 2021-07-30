@@ -458,6 +458,43 @@ describe('select-multiple', () => {
     });
   });
 
+  describe('with many custom classes in options', () => {
+    beforeEach(() => {
+      setPageContent(`
+        <select multiple>
+          <option value='foo'>Foo</option>
+          <option value='bar' selected>Bar</option>
+          <option value='baz' selected>Baz</option>
+        </select>
+      `);
+
+      select = getTestRoot().querySelector('select');
+
+      widgets('select-multiple', 'select[multiple]', {
+        on: 'init',
+        wrapperClass: 'multiple-select foo',
+        itemsWrapperClass: 'option-values foo',
+        itemClass: 'option-value foo',
+        itemLabelClass: 'option-label foo',
+        itemCloseClass: 'option-close foo',
+        itemCloseIconClass: 'option-icon foo',
+      });
+
+      wrapper = select.parentNode;
+      values = wrapper.querySelector('.option-values.foo');
+    });
+
+    it('uses the passed-in classes', () => {
+      expect(wrapper.classList.contains('multiple-select')).to.be.ok();
+      expect(wrapper.classList.contains('foo')).to.be.ok();
+      expect(values).not.to.be(null);
+      expect(values.querySelectorAll('.option-value.foo')).to.have.length(2);
+      expect(values.querySelectorAll('.option-label.foo')).to.have.length(2);
+      expect(values.querySelectorAll('.option-close.foo')).to.have.length(2);
+      expect(values.querySelectorAll('.option-icon.foo')).to.have.length(2);
+    });
+  });
+
   describe('with a custom value builder', () => {
     beforeEach(() => {
       setPageContent(`

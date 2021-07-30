@@ -1,7 +1,7 @@
 import widgets from 'widjet';
 import {CompositeDisposable, DisposableEvent} from 'widjet-disposables';
 import {asArray, addDelegatedEventListener, detachNode} from 'widjet-utils';
-import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf} from './utils';
+import {eachOptgroup, copyOptions, optionsOf, selectedOptionsOf, addClasses} from './utils';
 
 widgets.define('select-multiple', (options) => {
   const wrapperClass = options.wrapperClass || 'select-multiple';
@@ -19,7 +19,7 @@ widgets.define('select-multiple', (options) => {
                         options.formatValue ||
                         defaultFormatValue;
 
-    valuesContainer.classList.add(itemsWrapperClass);
+    addClasses(valuesContainer, itemsWrapperClass);
 
     selector.innerHTML = '<option style="display: none;"></option>';
 
@@ -88,7 +88,7 @@ widgets.define('select-multiple', (options) => {
 
   function wrapSelect(select) {
     const parent = document.createElement('div');
-    parent.classList.add(wrapperClass);
+    addClasses(parent, wrapperClass);
     select.parentNode.insertBefore(parent, select);
     parent.appendChild(select);
     return parent;
@@ -140,7 +140,7 @@ widgets.define('select-multiple', (options) => {
 
   function defaultFormatValue(option) {
     const div = document.createElement('div');
-    div.classList.add(itemClass);
+    addClasses(div, itemClass);
     div.setAttribute('data-value', option.value);
     div.innerHTML = `
       <span class="${itemLabelClass}">${option.textContent}</span>

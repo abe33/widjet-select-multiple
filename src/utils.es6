@@ -43,3 +43,9 @@ export function eachOptgroup(node, block) {
 export function selectedOptionsOf(select) {
   return optionsOf(select).filter(option => option.selected);
 }
+
+export function addClasses(el, s) {
+  s.split(/\s+/g).forEach((c) => {
+    el.classList.add(c);
+  });
+}
